@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Enemy
@@ -7,13 +8,12 @@ namespace Enemy
         [Range(0f, 5f)] public float moveSpeed = 5.0f;
         [Range(0f, 500f)] public float jumpForce = 5.0f;
 
-
-        private Vector2 _moveDirection = Vector2.zero; // can be zero
+        [SerializeField] private Vector2 _moveDirection = Vector2.zero; // can be zero
         private Rigidbody2D _rb;
         private Collider2D _col;
 
         // Start is called before the first frame update
-        private void Start()
+        private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();
             _col = GetComponent<Collider2D>();
@@ -23,8 +23,8 @@ namespace Enemy
         public void SetMoveDirection(Vector2 direction)
         {
             // check if the direction is normalized
-            if (direction.sqrMagnitude > 1.0f) direction.Normalize();
-            
+            if (direction.sqrMagnitude > 1.0f && direction != Vector2.zero) direction.Normalize();
+
             _moveDirection = direction;
         }
 
@@ -42,9 +42,9 @@ namespace Enemy
             Debug.DrawRay(pos, Vector2.up * 0.1f, Color.green, 1, false);
             Debug.DrawRay(pos, Vector2.right * 0.1f, Color.green, 1, false);
             Debug.DrawRay(pos, Vector2.left * 0.1f, Color.green, 1, false);
-            
+
             // TODO: Сделать коллизию только с тем от чего можно оттолкнуться
-            var res = Physics2D.OverlapCircleAll(pos, 0.1f, Physics2D.AllLayers).Length > 2;
+            var res = Physics2D.OverlapCircleAll(pos, 0.1f, Physics2D.DefaultRaycastLayers).Length > 2;
 
             // var res = Physics2D.OverlapCircle(pos, 0.1f, Physics2D.AllLayers - Physics2D.);
             return res;
@@ -69,9 +69,8 @@ namespace Enemy
             }
 
             var oldVelocity = _rb.velocity;
-
-            var horizontal = Mathf.Sign(_moveDirection.x); // 1 or 0 or -1
-
+            var horizontal = Math.Sign(_moveDirection.x); // 1 or 0 or -1
+            // Debug.Log($"horizontal: {horizontal} _moveDirection: {_moveDirection} {_moveDirection.magnitude} {_moveDirection.normalized}");
             oldVelocity.x = horizontal * moveSpeed;
             _rb.velocity = oldVelocity;
         }

@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 
 namespace Enemy
@@ -11,7 +12,7 @@ namespace Enemy
         Patrol,
         Chasing
     }
-    
+
     // TODO: добавить возможность: прыгать когда зашел в тупик
     [RequireComponent(typeof(EnemyController))]
     public class EnemyPatrolAI : MonoBehaviour
@@ -27,6 +28,10 @@ namespace Enemy
 
         // reference to the enemy controller
         [SerializeField] public EnemyController enemyController;
+
+        [Tooltip("Distance threshold to when the enemy should stop moving closer to the player")] 
+        [Range(0f, 3f)] public float distanceThreshold = 1.0f;
+
         private int _currentPointIndex;
         private Transform _currentPoint;
 
@@ -65,7 +70,8 @@ namespace Enemy
             enemyController = GetComponent<EnemyController>();
 
             if (patrolPoints.Count <= 0) return;
-
+            _leftBoundary = patrolPoints[0].position;
+            _rightBoundary = patrolPoints[0].position;
             foreach (var point in patrolPoints.Where(point => point != null))
             {
                 if (point.position.x > _rightBoundary.x) _rightBoundary = point.position;
@@ -170,6 +176,12 @@ namespace Enemy
             // clamp the target position to the boundaries
             targetPos.x = Mathf.Clamp(targetPos.x, _leftBoundary.x, _rightBoundary.x);
 
+            // don't come to close
+            if (Vector2.Distance(transform.position, targetPos) < distanceThreshold)
+            {
+                enemyController.SetMoveDirection(Vector2.zero);
+                return;
+            }
 
             var dir = (targetPos - transform.position).normalized;
             enemyController.SetMoveDirection(dir);
