@@ -79,7 +79,7 @@ public class Hero : Entity
             if (i < lives)
                 hearts[i].enabled = true;
             else 
-                hearts[i].enabled = false;
+                hearts[i].enabled = true;
         }
     }
 
