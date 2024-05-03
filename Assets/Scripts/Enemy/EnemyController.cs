@@ -11,7 +11,7 @@ namespace Enemy
         private Vector2 _moveDirection = Vector2.zero; // can be zero
         private Rigidbody2D _rb;
         private Collider2D _col;
-        private readonly int _entityLayer = 1 << 3;
+        private const int EntityLayer = 1 << 3;
 
         private void Awake()
         {
@@ -46,7 +46,7 @@ namespace Enemy
             // TODO: Сделать коллизию только с тем от чего можно оттолкнуться (всё ещё коллизия с триггерами)
             Collider2D[] results = { null, null };
             var size = Physics2D.OverlapCircleNonAlloc(pos, 0.1f, results,
-                Physics2D.DefaultRaycastLayers & ~_entityLayer);
+                Physics2D.DefaultRaycastLayers & ~EntityLayer);
             var res = size > 1;
 
             return res;
