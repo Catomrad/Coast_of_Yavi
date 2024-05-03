@@ -13,7 +13,6 @@ namespace Enemy
         private Collider2D _col;
         private readonly int _entityLayer = 1 << 3;
 
-        // Start is called before the first frame update
         private void Awake()
         {
             _rb = GetComponent<Rigidbody2D>();

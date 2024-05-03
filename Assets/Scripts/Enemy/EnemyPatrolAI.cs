@@ -27,7 +27,6 @@ namespace Enemy
         private Transform _player;
         private bool _isPaused;
 
-        // reference to the enemy controller
         [SerializeField] public EnemyController enemyController;
 
         [Tooltip("Distance threshold to when the enemy should stop moving closer to the player")] [Range(0f, 3f)]
