@@ -25,7 +25,7 @@ namespace Enemy
         [Range(0f, 3f)] public float stopTimeBetweenPoints = 1.0f;
 
         private Transform _player;
-        [SerializeField] private bool _isPaused;
+        private bool _isPaused;
 
         // reference to the enemy controller
         [SerializeField] public EnemyController enemyController;
