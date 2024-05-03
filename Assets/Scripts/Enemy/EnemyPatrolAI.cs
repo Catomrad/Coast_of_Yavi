@@ -1,7 +1,7 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 
 namespace Enemy
@@ -22,15 +22,16 @@ namespace Enemy
         [Tooltip("Will be set to Patrol if patrol points are set")]
         public AIState aiState = AIState.Idle;
 
-        private Transform _player;
+        [Range(0f, 3f)] public float stopTimeBetweenPoints = 1.0f;
 
-        // circle collider for player detection
+        private Transform _player;
+        [SerializeField] private bool _isPaused;
 
         // reference to the enemy controller
         [SerializeField] public EnemyController enemyController;
 
-        [Tooltip("Distance threshold to when the enemy should stop moving closer to the player")] 
-        [Range(0f, 3f)] public float distanceThreshold = 1.0f;
+        [Tooltip("Distance threshold to when the enemy should stop moving closer to the player")] [Range(0f, 3f)]
+        public float distanceThreshold = 1.0f;
 
         private int _currentPointIndex;
         private Transform _currentPoint;
@@ -46,6 +47,7 @@ namespace Enemy
 
         [Tooltip("Collider MUST be set \"is Trigger\" to TRUE")]
         public ColliderEventConduit detectionEvent;
+
 
         private void OnEnable()
         {
@@ -70,6 +72,8 @@ namespace Enemy
             enemyController = GetComponent<EnemyController>();
 
             if (patrolPoints.Count <= 0) return;
+
+            // ↓ patrol points are set ↓
             _leftBoundary = patrolPoints[0].position;
             _rightBoundary = patrolPoints[0].position;
             foreach (var point in patrolPoints.Where(point => point != null))
@@ -108,9 +112,7 @@ namespace Enemy
                     break;
                 case AIState.Chasing:
                     if (_player != null) break;
-                    var condition = FindAndSetClosestPatrolPoint();
-                    if (!condition) aiState = AIState.Idle;
-                    aiState = AIState.Patrol;
+                    aiState = !FindAndSetClosestPatrolPoint() ? AIState.Idle : AIState.Patrol;
                     break;
                 case AIState.Idle:
                     if (_player != null) aiState = AIState.Chasing;
@@ -151,21 +153,41 @@ namespace Enemy
             return true;
         }
 
+        private void MoveToNextPoint()
+        {
+            // Выбираем следующую точку патрулирования
+            _currentPointIndex = (_currentPointIndex + 1) % patrolPoints.Count;
+            _currentPoint = patrolPoints[_currentPointIndex];
+        }
 
-        // TODO: Добавить паузу между точками разворота ( или оставить это на EnemyController )
         private void Patrolling()
         {
-            enemyController.SetMoveDirection((_currentPoint.position - transform.position).normalized);
+            if (_isPaused)
+            {
+                enemyController.SetMoveDirection(Vector2.zero);
+                return;
+            }
 
+            enemyController.SetMoveDirection((_currentPoint.position - transform.position).normalized);
             // Если дистанция до точки больше чем 0.1f не меняем точку
             // Также движемся основываясь на горизонтальном положении
             // if (Math.Abs(transform.position.x - _currentPoint.position.x) > 0.1f) return;
-
             if (Vector2.Distance(transform.position, _currentPoint.position) > 0.1f) return;
+            // Пауза
+            var pos = transform.position;
+            var dtnext = patrolPoints[(_currentPointIndex + 1) % patrolPoints.Count].position - pos;
+            var dtprev = patrolPoints[_currentPointIndex].position - pos;
+            if (dtnext.x * dtprev.x < 0) StartCoroutine(PauseBeforeNextPoint());
+            else MoveToNextPoint();
+        }
 
-            // Следующая точка
-            _currentPointIndex = (_currentPointIndex + 1) % patrolPoints.Count;
-            _currentPoint = patrolPoints[_currentPointIndex];
+        private IEnumerator PauseBeforeNextPoint()
+        {
+            // Вход в состояние паузы
+            _isPaused = true;
+            yield return new WaitForSeconds(stopTimeBetweenPoints);
+            _isPaused = false;
+            MoveToNextPoint();
         }
 
         private void Chasing()

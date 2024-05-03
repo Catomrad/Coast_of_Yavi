@@ -8,9 +8,10 @@ namespace Enemy
         [Range(0f, 5f)] public float moveSpeed = 5.0f;
         [Range(0f, 500f)] public float jumpForce = 5.0f;
 
-        [SerializeField] private Vector2 _moveDirection = Vector2.zero; // can be zero
+        private Vector2 _moveDirection = Vector2.zero; // can be zero
         private Rigidbody2D _rb;
         private Collider2D _col;
+        private int _entityLayer = 1 << 3;
 
         // Start is called before the first frame update
         private void Awake()
@@ -43,10 +44,9 @@ namespace Enemy
             Debug.DrawRay(pos, Vector2.right * 0.1f, Color.green, 1, false);
             Debug.DrawRay(pos, Vector2.left * 0.1f, Color.green, 1, false);
 
-            // TODO: Сделать коллизию только с тем от чего можно оттолкнуться
-            var res = Physics2D.OverlapCircleAll(pos, 0.1f, Physics2D.DefaultRaycastLayers).Length > 2;
+            // TODO: Сделать коллизию только с тем от чего можно оттолкнуться (всё ещё коллизия с триггерами)
+            var res = Physics2D.OverlapCircleAll(pos, 0.1f, Physics2D.DefaultRaycastLayers & ~_entityLayer).Length > 1;
 
-            // var res = Physics2D.OverlapCircle(pos, 0.1f, Physics2D.AllLayers - Physics2D.);
             return res;
         }
 
@@ -62,7 +62,9 @@ namespace Enemy
 
         private void Move()
         {
-            // Если вектор приблизительно вверх то прыжок
+            // Если вектор приблизительно вверх то прыжок.
+            // Довольно эффективно, ведь пока объект не захочет прыгать(1-ое условие),
+            // условие IsGrounded не будет выполняться.
             if (Vector2.Dot(_moveDirection, Vector2.up) > 0.75 && IsGrounded())
             {
                 Jump();

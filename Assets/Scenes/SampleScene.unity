@@ -899,6 +899,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3201232172172024505, guid: 493a388fe90bf52459f6a4d3cab4678f, type: 3}
+      propertyPath: hearts.Array.data[0]
+      value: 
+      objectReference: {fileID: 1564337564}
+    - target: {fileID: 3201232172172024505, guid: 493a388fe90bf52459f6a4d3cab4678f, type: 3}
+      propertyPath: hearts.Array.data[1]
+      value: 
+      objectReference: {fileID: 1448574554}
+    - target: {fileID: 3201232172172024505, guid: 493a388fe90bf52459f6a4d3cab4678f, type: 3}
+      propertyPath: hearts.Array.data[2]
+      value: 
+      objectReference: {fileID: 695507294}
     - target: {fileID: 6100513177739890261, guid: 493a388fe90bf52459f6a4d3cab4678f, type: 3}
       propertyPath: m_Name
       value: Hero
@@ -6055,7 +6067,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1805068235}
   - component: {fileID: 1805068236}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Circle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
