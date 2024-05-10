@@ -22,7 +22,7 @@ public class Hero : Entity
     public float attackRange;
     public LayerMask enemy;
 
-    private RigidBody2D _rb;
+    private Rigidbody2D _rb;
     private Animator _anim;
     private SpriteRenderer _sprite;
 
@@ -127,8 +127,8 @@ public class Hero : Entity
     }
     private States State
     {
-        get { return (States)anim.GetInteger("state"); }
-        set { anim.SetInteger("state", (int)value); }
+        get { return (States)_anim.GetInteger("state"); }
+        set { _anim.SetInteger("state", (int)value); }
         
     }
 }
