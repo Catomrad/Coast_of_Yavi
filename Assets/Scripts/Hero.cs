@@ -22,10 +22,9 @@ public class Hero : Entity
     public float attackRange;
     public LayerMask enemy;
 
-
-    private Rigidbody2D rb;
-    private Animator anim;
-    private SpriteRenderer sprite;
+    private RigidBody2D _rb;
+    private Animator _anim;
+    private SpriteRenderer _sprite;
 
     public static Hero Instance { get; set; }
 
@@ -34,15 +33,17 @@ public class Hero : Entity
         lives = 3;
         health = lives;
         Instance = this;
-        rb = GetComponent<Rigidbody2D>();
-        anim = GetComponent<Animator>();
-        sprite = GetComponentInChildren<SpriteRenderer>();
+        _rb = GetComponent<Rigidbody2D>();
+        _anim = GetComponent<Animator>();
+        _sprite = GetComponentInChildren<SpriteRenderer>();
         isRecharged = true;
     }
+
     private void FixedUpdate()
     {
         CheckGround();
     }
+
     public override void GetDamage()
     {
         lives -= 1;
@@ -55,7 +56,6 @@ public class Hero : Entity
 
     private void Attack()
     {
-       
     }
 
     private void Update()
@@ -66,40 +66,51 @@ public class Hero : Entity
             Run();
         if (isGrounded && Input.GetButtonDown("Jump"))
             Jump();
-        
-        if(health > lives)
-        {
-            health = lives;
-        } 
-        for (int i = 0 ;i < hearts.Length ; i++) 
+
+        if (health > lives) health = lives;
+
+        for (var i = 0; i < hearts.Length; i++)
         {
             if (i < health)
-            {
                 hearts[i].sprite = aliveHeart;
-            }
             else
                 hearts[i].sprite = deadHeart;
 
             if (i < lives)
                 hearts[i].enabled = true;
-            else 
+            else
                 hearts[i].enabled = true;
         }
     }
+
+
+    public override void Die()
+    {
+        Destroy(gameObject);
+    }
+
+
+    // TODO: Попробовать использовать (_rb) RigidBody2D.velocity для передвижения
+    // https://docs.unity3d.com/ScriptReference/Rigidbody2D-velocity.html
 
     private void Run()
     {
         if (isGrounded) State = States.run;
 
         Vector3 dir = transform.right * Input.GetAxis("Horizontal");
-        transform.position = Vector3.MoveTowards(transform.position,transform.position + dir, speed * Time.deltaTime);
-        sprite.flipX = !(dir.x > 0.0f);
+        var position = transform.position;
+        position = Vector3.MoveTowards(position, position + dir, speed * Time.deltaTime);
+        transform.position = position;
+        _sprite.flipX = !(dir.x > 0.0f);
         //sprite.sprite = "hero-frame-2";
     }
+
     private void Jump()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
+        _rb.AddForce(transform.up * jumpForce, ForceMode2D.Impulse);
     }
+    
+
     private void CheckGround()
     {
         Collider2D[] collider = Physics2D.OverlapCircleAll(transform.position, 0.3f);
