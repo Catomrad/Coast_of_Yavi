@@ -22,8 +22,8 @@ public class Hero : Entity
     public float attackRange;
     public LayerMask enemy;
 
-
-    private Rigidbody2D _rb;
+    private RigidBody2D _rb;
+    private Animator _anim;
     private SpriteRenderer _sprite;
 
     public static Hero Instance { get; set; }
@@ -34,6 +34,7 @@ public class Hero : Entity
         health = lives;
         Instance = this;
         _rb = GetComponent<Rigidbody2D>();
+        _anim = GetComponent<Animator>();
         _sprite = GetComponentInChildren<SpriteRenderer>();
         isRecharged = true;
     }
@@ -59,6 +60,8 @@ public class Hero : Entity
 
     private void Update()
     {
+        if (isGrounded) State = States.idle;
+
         if (Input.GetButton("Horizontal"))
             Run();
         if (isGrounded && Input.GetButtonDown("Jump"))
@@ -92,6 +95,8 @@ public class Hero : Entity
 
     private void Run()
     {
+        if (isGrounded) State = States.run;
+
         Vector3 dir = transform.right * Input.GetAxis("Horizontal");
         var position = transform.position;
         position = Vector3.MoveTowards(position, position + dir, speed * Time.deltaTime);
@@ -108,9 +113,22 @@ public class Hero : Entity
 
     private void CheckGround()
     {
-        var pos = transform.position;
-        var results = new Collider2D[2];
-        var size = Physics2D.OverlapCircleNonAlloc(pos, 0.3f, results);
-        isGrounded = size > 1;
+        Collider2D[] collider = Physics2D.OverlapCircleAll(transform.position, 0.3f);
+        isGrounded = collider.Length > 1;
+
+        if (!isGrounded) State = States.jump;
+    }
+
+    public enum States
+    {
+        idle,
+        run,
+        jump
+    }
+    private States State
+    {
+        get { return (States)anim.GetInteger("state"); }
+        set { anim.SetInteger("state", (int)value); }
+        
     }
 }
