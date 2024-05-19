@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
-
+    // TODO: Сделать так что бы камера не уходила далеко от игрока
     [SerializeField] private Transform player;
     private Vector3 pos;
 
