@@ -1,18 +1,21 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.SceneManagement;
 public class MainMenu : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
+    // Начать игру
+    public void PlayGame()
     {
-        
+        SceneManager.LoadScene(1);
     }
+    
+
+    // Продолжить игру
+    public void Continue() { }
+    
+    // Бестиарий
+    public void Bestiary() { }
+    
+    // Настройки
+    public void Settings() { }
 }
