@@ -166,5 +166,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   value: 5
-  collectParticles: {fileID: 3019656300571346854, guid: a24f1d325c57af54980dadaa15592445, type: 3}
-  collectSound: {fileID: 8300000, guid: c0d9dc61d591df540846989c69067130, type: 3}
+  collectParticles: {fileID: 3019656300571346854, guid: 0e32bcbc00c9fb44e950b83c4772b64d, type: 3}
+  collectSound: {fileID: 8300000, guid: 15f64a31569d17948be60bc8b92e556a, type: 3}

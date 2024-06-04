@@ -46,7 +46,9 @@ public class Hero : Entity
 
     public override void GetDamage()
     {
+        
         lives -= 1;
+        UpdateHealthUI();
         Debug.Log(lives);
         if (lives < 1)
         {
@@ -56,14 +58,24 @@ public class Hero : Entity
 
     private void Attack()
     {
-        if (isGrounded && isRecharged)
-        {
-            State = States.attack;
-            isRecharged = false;
-            isAttacking = true;
+        // атаковать можно только на земле и когда не перезаряжается
+        if (!isGrounded || !isRecharged) return;
+        State = States.attack;
+        isRecharged = false;
+        isAttacking = true;
+        OnAttack();
+        StartCoroutine(AttackAnimation());
+        StartCoroutine(AttackCoolDown());
+    }
+    
+    private void OnAttack()
+    {
+        var colliders = Physics2D.OverlapCircleAll(attackPos.position, attackRange, enemy);
 
-            StartCoroutine(AttackAnimation());
-            StartCoroutine(AttackCoolDown());
+        foreach (var t in colliders)
+        {
+            Debug.Log(t.name, t.GetComponentInParent<Entity>());
+            t.GetComponentInParent<Entity>().GetDamage();
         }
     }
 
@@ -97,19 +109,23 @@ public class Hero : Entity
         if (Input.GetButtonDown("Fire1"))
             Attack();
 
+        if (transform.position.y < -10f)
+        {
+            for (int i = 0; i < lives; i++) GetDamage();
+            // Die();
+        }
+        // UpdateHealthUI();
+    }
+
+    private void UpdateHealthUI()
+    {
         if (health > lives) health = lives;
 
         for (var i = 0; i < hearts.Length; i++)
         {
-            if (i < health)
-                hearts[i].sprite = aliveHeart;
-            else
-                hearts[i].sprite = deadHeart;
+            hearts[i].sprite = i < health ? aliveHeart : deadHeart;
 
-            if (i < lives)
-                hearts[i].enabled = true;
-            else
-                hearts[i].enabled = true;
+            hearts[i].enabled = true;
         }
     }
 
@@ -158,8 +174,7 @@ public class Hero : Entity
     }
     private States State
     {
-        get { return (States)_anim.GetInteger("state"); }
-        set { _anim.SetInteger("state", (int)value); }
-        
+        get => (States)_anim.GetInteger("state");
+        set => _anim.SetInteger("state", (int)value);
     }
 }

@@ -22,10 +22,10 @@ public class CoinCounter : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance is not null) Debug.LogWarning("Instance already exists.");
+        if (Instance != null) Debug.LogWarning("Instance already exists.");
         else Instance = this;
         
-        if (coinText is null) Debug.LogError("Coin Text is not assigned.");
+        if (coinText == null) Debug.LogError("Coin Text is not assigned.");
         else UpdateCoinText();
     }
 

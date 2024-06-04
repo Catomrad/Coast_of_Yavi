@@ -17,6 +17,7 @@ public class CameraController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        if (player  == null) return;
         pos = player.position;
         pos.z = -10f;
         pos.y += 3f;
