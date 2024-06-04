@@ -56,16 +56,46 @@ public class Hero : Entity
 
     private void Attack()
     {
+        if (isGrounded && isRecharged)
+        {
+            State = States.attack;
+            isRecharged = false;
+            isAttacking = true;
+
+            StartCoroutine(AttackAnimation());
+            StartCoroutine(AttackCoolDown());
+        }
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(attackPos.position, attackRange);
+    }
+
+    private IEnumerator AttackAnimation()
+    {
+        yield return new WaitForSeconds(0.4f);
+        isAttacking = false;
+    }
+
+    private IEnumerator AttackCoolDown()
+    {
+        yield return new WaitForSeconds(0.5f);
+        isRecharged = true;
     }
 
     private void Update()
     {
-        if (isGrounded) State = States.idle;
+        if (isGrounded && !isAttacking) State = States.idle;
 
-        if (Input.GetButton("Horizontal"))
+        if (!isAttacking && Input.GetButton("Horizontal"))
             Run();
-        if (isGrounded && Input.GetButtonDown("Jump"))
+        if (!isAttacking && isGrounded && Input.GetButtonDown("Jump"))
             Jump();
+
+        if (Input.GetButtonDown("Fire1"))
+            Attack();
 
         if (health > lives) health = lives;
 
@@ -123,7 +153,8 @@ public class Hero : Entity
     {
         idle,
         run,
-        jump
+        jump,
+        attack
     }
     private States State
     {
