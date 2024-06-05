@@ -55,6 +55,12 @@ public class Hero : Entity
             Die();
         }
     }
+    public void GetHealing()
+    {
+        lives += 1;
+        UpdateHealthUI();
+        Debug.Log(lives);
+    }
 
     private void Attack()
     {
@@ -112,14 +118,13 @@ public class Hero : Entity
         if (transform.position.y < -10f)
         {
             for (int i = 0; i < lives; i++) GetDamage();
-            // Die();
         }
         // UpdateHealthUI();
     }
 
     private void UpdateHealthUI()
     {
-        if (health > lives) health = lives;
+        health = lives;
 
         for (var i = 0; i < hearts.Length; i++)
         {

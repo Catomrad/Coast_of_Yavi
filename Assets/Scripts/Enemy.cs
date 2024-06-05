@@ -50,7 +50,7 @@ public class Enemy2 : Entity
     {
         var controller = GetComponent<EnemyController>();
         var velocity = controller.GetVelocity();
-        Debug.Log($"{velocity}, {State}");
+        //Debug.Log($"{velocity}, {State}");
         if (State == States.attack) { return; }
         if (velocity != Vector2.zero && State != States.attack)
         {
